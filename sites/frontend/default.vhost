@@ -1,0 +1,10 @@
+server {
+  server_name admin.test.com;
+  listen 8080;
+  index index.html;
+  root /var/www;
+
+  location / {
+    try_files $uri$args $uri$args/ index.html;
+  }
+}
