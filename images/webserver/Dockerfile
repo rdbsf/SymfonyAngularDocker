@@ -13,9 +13,8 @@ RUN echo "daemon off;" >> /etc/nginx/nginx.conf
 RUN rm -rf /etc/apt/sources.list.d/proposed.list
 
 # Install packages
-RUN apt-get update
-RUN apt-get install -y \
-  supervisor \
+RUN apt-get update && \
+  apt-get install -y \
   curl \
   wget \
   php5-fpm \
@@ -30,23 +29,20 @@ RUN curl -sS https://getcomposer.org/installer | php
 RUN mv composer.phar /usr/local/bin/composer
 
 # Create required directories
-RUN mkdir -p /var/log/supervisor
-RUN mkdir -p /etc/nginx
-RUN mkdir -p /var/run/php5-fpm
-RUN mkdir -p /etc/nginx/sites-enabled
-RUN mkdir -p /var/api/cache
-RUN mkdir -p /var/api/logs
-RUN rm /etc/nginx/sites-enabled/default
+RUN mkdir -p /etc/nginx && \
+    mkdir -p /var/run/php5-fpm && \
+    mkdir -p /etc/nginx/sites-enabled && \
+    mkdir -p /var/api/cache && \
+    mkdir -p /var/api/logs
 
 # Add configuration files
-ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 ADD php.ini /etc/php5/fpm/conf.d/40-custom.ini
 
 # Expose volumes
 VOLUME ["/var/www", "/etc/nginx/sites-enabled", "/var/api/cache", "/var/api/logs"]
 
-EXPOSE 8008
+EXPOSE 80
 
 WORKDIR /var/www
 
-CMD ["/usr/bin/supervisord"]
+CMD service php5-fpm start && nginx
