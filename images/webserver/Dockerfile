@@ -17,6 +17,7 @@ RUN apt-get update && \
   apt-get install -y \
   curl \
   wget \
+  nano \
   php5-fpm \
   php5-mysql \
   php5-mcrypt \
@@ -34,6 +35,8 @@ RUN mkdir -p /etc/nginx && \
     mkdir -p /etc/nginx/sites-enabled && \
     mkdir -p /var/api/cache && \
     mkdir -p /var/api/logs
+
+RUN rm -rf /etc/nginx/sites-available/default
 
 # Add configuration files
 ADD php.ini /etc/php5/fpm/conf.d/40-custom.ini

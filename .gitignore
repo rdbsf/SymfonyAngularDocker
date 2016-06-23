@@ -3,3 +3,7 @@ bodge.sh
 rigger.sh
 Vagrantfile
 .editorconfig
+.idea
+.idea/
+.idea/*
+.DS_Store

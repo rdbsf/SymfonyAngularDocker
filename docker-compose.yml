@@ -4,35 +4,26 @@ webserver:
     - "80:80"
   links:
     - mysql:mysql
-    - mongodb:mongodb
-    - memcached:memcached
-    - redis:redis
-    - elasticsearch:elasticsearch
-    - rabbitmq:rabbitmq
+    - neo4j:neo4j
   volumes_from:
     - apidata
-    - admindata
     - frontenddata
+  environment:
+    NEO4J_URL: http://neo4j:neo5j@neo4j:7474
 
 apidata:
   image: busybox
   volumes:
     - "/var/www/api/app/cache"
     - "/var/www/api/app/logs"
-    - "sites/api/api.conf:/etc/nginx/sites-enabled/api.conf"
-    - "www/api/:/var/www/api/"
-
-admindata:
-  image: busybox
-  volumes:
-    - "sites/admin/admin.conf:/etc/nginx/sites-enabled/admin.conf"
-    - "www/admin/:/var/www/admin/"
+    - "./sites/api/api.conf:/etc/nginx/sites-enabled/api.conf"
+    - "./www/api/:/var/www/api/"
 
 frontenddata:
   image: busybox
   volumes:
-    - "sites/frontend/frontend.conf:/etc/nginx/sites-enabled/frontend.conf"
-    - "www/frontend/:/var/www/frontend/"
+    - "./sites/frontend/frontend.conf:/etc/nginx/sites-enabled/frontend.conf"
+    - "./www/frontend/:/var/www/frontend/"
 
 mysql:
   image: tutum/mysql
@@ -42,40 +33,13 @@ mysql:
     MYSQL_PASS: password
     ON_CREATE_DB: "apidb"
 
-mongodb:
-  image: tutum/mongodb
+neo4j:
+  image: neo4j:3.0
   ports:
-    - "27017:27017"
-    - "28017:28017"
+    - "7474:7474"
+    - "7687:7687"
+  volumes:
+    - "./neo4j/data:/data"
   environment:
-    MONGODB_PASS: password
+    NEO4J_AUTH: "neo4j/neo5j"
 
-rabbitmq:
-  image: tutum/rabbitmq
-  ports:
-    - "5672:5672"
-    - "15672:15672"
-  environment:
-    RABBITMQ_PASS: password
-
-memcached:
-  image: tutum/memcached
-  ports:
-    - "11211:11211"
-  environment:
-    MEMCACHED_PASS: password
-
-redis:
-  image: tutum/redis
-  ports:
-    - "6379:6379"
-  environment:
-    REDIS_PASS: password
-
-elasticsearch:
-  image: tutum/elasticsearch
-  ports:
-    - "9200:9200"
-  environment:
-    ELASTICSEARCH_USER: admin
-    ELASTICSEARCH_PASS: password
